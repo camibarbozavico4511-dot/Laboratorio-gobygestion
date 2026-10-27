@@ -1,0 +1,16 @@
+{
+  "entries": [
+    {
+      "dataPath": "individual/",
+      "structureFormat": "csv",
+      "separator": ",",
+      "isPartitioned": false
+    },
+    {
+      "dataPath": "reportes/",
+      "structureFormat": "csv",
+      "separator": ",",
+      "isPartitioned": false
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "name": "Gobernanza - OpenMetadata y PostgreSQL",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "16gb",
+    "storage": "32gb"
+  },
+  "forwardPorts": [
+    8585,
+    8080,
+    5432,
+    9000,
+    9001
+  ],
+  "portsAttributes": {
+    "8585": {
+      "label": "OpenMetadata",
+      "onAutoForward": "notify",
+      "visibility": "private"
+    },
+    "8080": {
+      "label": "Ejecutor de ingestas (Airflow)",
+      "onAutoForward": "silent",
+      "visibility": "private"
+    },
+    "5432": {
+      "label": "PostgreSQL - movilidad",
+      "onAutoForward": "silent",
+      "visibility": "private"
+    },
+    "9000": {
+      "label": "MinIO API S3",
+      "onAutoForward": "silent",
+      "visibility": "private"
+    },
+    "9001": {
+      "label": "MinIO archivos",
+      "onAutoForward": "notify",
+      "visibility": "private"
+    }
+  },
+  "postStartCommand": "bash scripts/start.sh",
+  "remoteUser": "vscode",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-azuretools.vscode-docker"
+      ]
+    }
+  }
+}

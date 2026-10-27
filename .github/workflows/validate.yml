@@ -1,0 +1,31 @@
+name: Validar archivos y carga S3 a PostgreSQL
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Revisar JSON y scripts
+        run: |
+          python3 -m json.tool .devcontainer/devcontainer.json >/dev/null
+          for script in scripts/*.sh; do bash -n "$script"; done
+          sh -n infra/storage.sh
+          python3 tests/test_csv_reader.py
+          python3 tests/test_ingestion_health.py
+      - name: Validar Compose
+        run: docker compose config --quiet
+      - name: Preparar MinIO con manifiesto y tablas vacías
+        run: |
+          docker compose up -d --wait --wait-timeout 150 postgres-lab minio
+          docker compose run --rm minio-init
+      - name: Publicar archivos y probar carga S3
+        run: python3 tests/test_postgres.py
+      - name: Ver logs si falla
+        if: failure()
+        run: docker compose logs --tail=80 postgres-lab minio minio-init
+      - name: Limpiar entorno efímero de CI
+        if: always()
+        run: docker compose down -v
